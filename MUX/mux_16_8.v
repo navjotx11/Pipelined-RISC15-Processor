@@ -1,19 +1,19 @@
-module mux_16_8(inp0, inp1, inp2, inp3, inp4, inp5, inp6, inp7, sel, out);  // 8-16bit-input mux
+module mux_16_8(data0, data1, data2, data3, data4, data5, data6, data7, selectInput, out);  // 8-16bit-input mux
 
 	output reg [15:0] out;
-	input  [15:0] inp0, inp1, inp2, inp3, inp4, inp5, inp6, inp7;
-	input  [2:0] sel;
+	input  [15:0] data0, data1, data2, data3, data4, data5, data6, data7;
+	input  [2:0] selectInput;
 	
-	always@(inp0 or inp1 or inp2 or inp3 or inp4 or inp5 or inp6 or inp7 or sel) begin
-		case(sel)
-			0: out = inp0;
-			1: out = inp1;
-			2: out = inp2;
-			3: out = inp3;
-			4: out = inp4;
-			5: out = inp5;
-			6: out = inp6;
-			7: out = inp7;
+	always @(*)begin
+		case(selectInput)
+			0: out = data0;
+			1: out = data1;
+			2: out = data2;
+			3: out = data3;
+			4: out = data4;
+			5: out = data5;
+			6: out = data6;
+			7: out = data7;
 		endcase
 	end
 	

@@ -1,13 +1,13 @@
-module mux_16_2(inp0, inp1, sel, out);
+module mux_16_2(data0, data1, selectInput, out);  // 2-16bit-input mux
 
 	output reg [15:0] out;
-	input  [15:0] inp0, inp1;
-	input  sel;
+	input  [15:0] data0, data1;
+	input  selectInput;
 	
-	always@(inp0 or inp1 or sel) begin
-		case(sel)
-			0: out = inp0;
-			1: out = inp1;
+	always@(*) begin
+		case(selectInput)
+			0: out = data0;
+			1: out = data1;
 		endcase
 	end
 	
