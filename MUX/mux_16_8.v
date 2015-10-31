@@ -1,6 +1,7 @@
-module mux_16_8(data0, data1, data2, data3, data4, data5, data6, data7, selectInput, out);  // 8-16bit-input mux
+module mux_16_8(data0, data1, data2, data3, data4, data5, data6, data7, selectInput, out); 
 
 	output reg [15:0] out;
+	
 	input  [15:0] data0, data1, data2, data3, data4, data5, data6, data7;
 	input  [2:0] selectInput;
 	

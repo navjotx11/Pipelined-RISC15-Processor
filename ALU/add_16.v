@@ -1,5 +1,7 @@
-module add_16(in1, in2 , out,clk);		// Implements a full 16-bit adder	
+module add_16(in1, in2 , out,clk);
+
 	output  [15:0]  out;
+
 	input clk;
 	input  [15:0] in1, in2;
 	
