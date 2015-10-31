@@ -1,6 +1,7 @@
-module reg16_file(clk, out1, out2, readAdd1, readAdd2, write, writeAdd, writeR7, inR7, in, reset); // Modify to include R7 effects
+module reg16_file(clk, out1, out2, readAdd1, readAdd2, write, writeAdd, writeR7, inR7, in, reset);
 
 	output [15:0] out1, out2;
+	
 	input  [15:0] in, inR7;
 	input  [2:0]  readAdd1, readAdd2, writeAdd;
 	input         write, clk, reset, writeR7;
@@ -8,6 +9,7 @@ module reg16_file(clk, out1, out2, readAdd1, readAdd2, write, writeAdd, writeR7,
 	wire   [15:0] data0,  data1,  data2,  data3,  data4,  data5,  data6,  data7;
 	wire   [6:0]   writeLines;
 	wire [7:0] writeLinesInit;
+	
 	demux_8 dem(writeAdd, writeLinesInit);
 	mux_16_8 mux1(data0, data1, data2, data3, data4, data5, data6, data7, readAdd1, out1);
 	mux_16_8 mux2(data0, data1, data2, data3, data4, data5, data6, data7, readAdd2, out2);
