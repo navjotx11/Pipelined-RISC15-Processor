@@ -6,7 +6,7 @@ module write_back(clk, reset, Imm970, MemData, PCImmInc, ALUOut, PCInc, regSelec
 	input  [ 1:0] regSelect;
 	input         clk, reset;
 
-	mux_16_4 regWriteMux(.data0(MemData), .data1(ALUOut), .data2(Imm970), .data3(PCInc), .selectInput(regSelect), .out(writeData));
-	mux_16_8 r7WriteMux(.data0(Imm970), .data1(MemData), .data2(PCImmInc), .data3(ALUOut), .data4(RFOut2), .data5(PCInc), .selectInput(r7Select), .out(writeR7Data));
+	mux_16_4 __regWriteMux(.data0(MemData), .data1(ALUOut), .data2(Imm970), .data3(PCInc), .selectInput(regSelect), .out(writeData));
+	mux_16_8 __r7WriteMux(.data0(Imm970), .data1(MemData), .data2(PCImmInc), .data3(ALUOut), .data4(RFOut2), .data5(PCInc), .selectInput(r7Select), .out(writeR7Data));
 
 endmodule

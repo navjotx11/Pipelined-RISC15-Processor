@@ -1,6 +1,6 @@
 module decode(MmemData, fromPipe1PC, IR, PC_Imm, rA1, rA2, wA, Sext_Imm6, Imm970, Mex1, Mex2, wMem, alu_ctrl, MregWB, MmemR, MmemW, Mr7WB,modify_pr2_ra,modify_ir,clk);
+	
 	output  [15:0] PC_Imm, Sext_Imm6, Imm970;
-
 	output reg [2:0] rA1, rA2, wA;
 	output reg [1:0] MregWB;
 	output wire [2:0]modify_pr2_ra;
@@ -10,19 +10,19 @@ module decode(MmemData, fromPipe1PC, IR, PC_Imm, rA1, rA2, wA, Sext_Imm6, Imm970
 	integer i;
 	output reg  Mex1, Mex2, wMem, alu_ctrl, MmemR, MmemW;
 	output reg [2:0] Mr7WB;
-	input [15:0] fromPipe1PC, IR;//from pipe1
+	input [15:0] fromPipe1PC, IR;
 	input clk;
 	wire [15:0] imm6, imm9;
 	wire select;
 	wire [15:0] offset;
-	wire [8:0] LM_Imm;	//Only for LM & SM instruction
+	wire [8:0] LM_Imm;	
 	assign LM_Imm = IR[8:0];
 	assign imm6 = {10'd0, IR[5:0]};
 	assign imm9 = {7'd0, IR[8:0]};
-	assign select = (IR[15:12]==4'B1000)?1'b0:1'b1;	//If opcode is 1000 then select data0.
-	mux_16_2 m1(.data0(imm9), .data1(imm6), .selectInput(select), .out(offset));
-	add_16 add1(.in1(fromPipe1PC),.in2(offset),.out(PC_Imm),.clk(clk));
-	shift_6 s1(.in(IR[5:0]), .out(Sext_Imm6));
+	assign select = (IR[15:12]==4'b1000)?1'b0:1'b1;	
+	mux_16_2 __m1(.data0(imm9), .data1(imm6), .selectInput(select), .out(offset));
+	add_16 __add1(.in1(fromPipe1PC),.in2(offset),.out(PC_Imm),.clk(clk));
+	shift_6 __s1(.in(IR[5:0]), .out(Sext_Imm6));
 	assign Imm970 = {IR[8:0], 7'd0};
 	
 	always@(*)	
@@ -30,118 +30,118 @@ module decode(MmemData, fromPipe1PC, IR, PC_Imm, rA1, rA2, wA, Sext_Imm6, Imm970
 	
 		case (IR[15:12])
 			
-			4'b0000:	//ADD, ADC, ADZ
+			4'b0000:	//Instructions ADD, ADC, ADZ
 			begin
 				modify_ir <= 1'b0;
-				rA2<= IR[8:6];	//RB
-				wA<= IR[5:3];	//RC
-				rA1<= IR[11:9];	//RA
-				Mex1<= 0;	//Rfout1
-				Mex2<= 0;	//Rfout2
+				rA2<= IR[8:6];	
+				wA<= IR[5:3];	
+				rA1<= IR[11:9];	
+				Mex1<= 0;
+				Mex2<= 0;
 				alu_ctrl<=0;	//Add operation
-				wMem<=1;	// No memory write
-				MmemR<=0;	//Don't Care
-				MmemW<=0;	//Don't Care
-				MmemData<=0;	//Don't Care
-				MregWB<=1;	//Write back Alu_out
+				wMem<=1;	// memory write disabled
+				MmemR<=0;	
+				MmemW<=0;
+				MmemData<=0;
+				MregWB<=1;	//Write_back Alu_out
 				if(IR[5:3]==3'b111)	//If RC is R7
-					Mr7WB<=3;	//Write back Alu_out to R7
+					Mr7WB<=3;	//Write_back Alu_out to R7
 				else
-					Mr7WB<=5;	//PC Increment
+					Mr7WB<=5;	//Increment PC
 			end
 			
-			4'b0001:	//ADI
+			4'b0001:	//ADI instruction
 			begin
 				modify_ir <= 1'b0;
-				rA1<= IR[11:9];	//RA
-				rA2<= 3'b000;	//Don't Care
-				wA<= IR[8:6];	//RB
-				Mex1<= 0;	//Rfout1
-				Mex2<= 1;	//Sext_Imm6;	
+				rA1<= IR[11:9];	
+				rA2<= 3'b000;
+				wA<= IR[8:6];
+				Mex1<= 0;
+				Mex2<= 1;	//Shift_6;	
 				alu_ctrl<=0;	//ADD
-				wMem<=1;	// No memory write
-				MmemR<=0;	//Don't Care
-				MmemW<=0;	//Don't Care
-				MmemData<=0;	//Don't Care
+				wMem<=1;
+				MmemR<=0;
+				MmemW<=0;
+				MmemData<=0;
 				MregWB<=1; 	//Write back Alu_out
 				if(IR[8:6]==3'b111)	//If RB is R7
-					Mr7WB<=3;	//Write back Alu_out to R7
+					Mr7WB<=3;	//Write_back Alu_out to R7
 				else
-					Mr7WB<=5;	//PC Increment
+					Mr7WB<=5;	//Increment PC
 			end
 			
-			4'b0010:	//NDU, NDC, NDZ
+			4'b0010:	//Instructions NDU, NDC, NDZ
 			begin
 				modify_ir <= 1'b0;
-				rA2<= IR[8:6];	//RB
-				wA<= IR[5:3];	//RC
-				rA1<= IR[11:9];	//RA
-				Mex1<= 0;	//Rfout1
-				Mex2<= 0;	//Rfout2
+				rA2<= IR[8:6];	
+				wA<= IR[5:3];
+				rA1<= IR[11:9];
+				Mex1<= 0;
+				Mex2<= 0;
 				alu_ctrl<=1;	//Nand operation
-				wMem<=1;	// No memory write
-				MmemR<=0;	//Don't Care
-				MmemW<=0;	//Don't Care
-				MmemData<=0;	//Don't Care
-				MregWB<=1;	//Write back Alu_out
+				wMem<=1;
+				MmemR<=0;
+				MmemW<=0;
+				MmemData<=0;
+				MregWB<=1;	//Write_back Alu_out
 				if(IR[5:3]==3'b111)	//If RC is R7
-					Mr7WB<=3;	//Write back Alu_out to R7
+					Mr7WB<=3;	//Write_back Alu_out to R7
 				else
-					Mr7WB<=5;	//PC Increment
+					Mr7WB<=5;	//Increment PC
 			end
 			
-			4'b0011:	//LHI
+			4'b0011:	//LHI instruction
 			begin
 				modify_ir <= 1'b0;
-				wA<= IR[11:9];	//RA
-				rA1<= 3'b000;	//Don't Care
-				rA2<= 3'b000;	//Don't Care
-				Mex1<=0;	//Don't care
-				Mex2<=0;	//Don't care
-				alu_ctrl<=0;	//Don't care
-				wMem<=1;	//No memory write
-				MmemR<=0;	//Don't Care
-				MmemW<=0;	//Don't Care
-				MmemData<=0;	//Don't Care
-				MregWB<=2;	//Write back Imm970 to RA
+				wA<= IR[11:9];
+				rA1<= 3'b000;
+				rA2<= 3'b000;
+				Mex1<=0;
+				Mex2<=0;
+				alu_ctrl<=0;
+				wMem<=1;
+				MmemR<=0;	
+				MmemW<=0;	
+				MmemData<=0;
+				MregWB<=2;	
 				if(IR[11:9]==3'b111) //If RA is R7
-					Mr7WB<=0;	// Write back Imm970 to R7
+					Mr7WB<=0;	// Write_back Imm970 to R7
 				else
-					Mr7WB<=5;	//PC Increment
+					Mr7WB<=5;	//Increment PC
 			end
 			
-			4'b0100:	//LW
+			4'b0100:	//LW Instruction
 			begin
 				modify_ir <= 1'b0;
-				wA<= IR[11:9];	//RA
-				rA2<=IR[8:6];	//RB
-				rA1<=3'b000;	//Don't Care
-				Mex1<=1;	//Sign Extended Immediate six bit
-				Mex2<=0;	//Rfout2
-				alu_ctrl<=0;	//ADD
-				wMem<=1;	//No memory write
-				MmemR<=1;	//Read from memory using address in Alu_out
-				MmemW<=0;	//Don't Care
-				MmemData<=0;	//Don't Care
-				MregWB<=0;	//Write back mem_data
+				wA<= IR[11:9];	
+				rA2<=IR[8:6];	
+				rA1<=3'b000;	
+				Mex1<=1;
+				Mex2<=0;
+				alu_ctrl<=0;
+				wMem<=1;
+				MmemR<=1;
+				MmemW<=0;
+				MmemData<=0;
+				MregWB<=0;	//Write_back mem_data
 				if(IR[11:9]==3'b111) //If RA is R7
 					Mr7WB<=1;	// Write back mem_data to R7
 				else
-					Mr7WB<=5;	//PC Increment
+					Mr7WB<=5;	//Increment PC
 			end
 			
-			4'b0101:	//SW
+			4'b0101:	//SW Instruction
 			begin
 				modify_ir <= 1'b0;
-				rA2<= IR[8:6];	//RB
-				rA1<= IR[11:9];	//RA
-				wA<= 3'b000;	//Don't Care
-				Mex1<=1;	//Sign Extended Immediate six bit
-				Mex2<=0;	//Rfout2
+				rA2<= IR[8:6];	
+				rA1<= IR[11:9];	
+				wA<= 3'b000;	
+				Mex1<=1;
+				Mex2<=0;
 				alu_ctrl<=0;	//Add
-				wMem<=0;	// Write to memory
-				MmemR<=0;	//Don't Care
-				MmemW<=1;	//Write to memory. address in Alu_out
+				wMem<=0;
+				MmemR<=0;
+				MmemW<=1;
 				MmemData<=0;	//Write to memory. Data present in rfout1
 				MregWB<=0;	//Don't Care
 				Mr7WB<=5;	//PC Increment
@@ -171,24 +171,25 @@ module decode(MmemData, fromPipe1PC, IR, PC_Imm, rA1, rA2, wA, Sext_Imm6, Imm970
 				else 
 					wA <=3'b000;
 				modify_ir <= 1'b1;
-				Mex1<=0;	//Don't care
-				Mex2<=0;	//Don't Care
-				alu_ctrl<=0;	//Don't Care
-				wMem<=1;	//No memory write operation
-				MmemR<=0;	//Read from memory using address stored in RA
-				MmemW<=0;	//Don't Care
-				MmemData<=0;	//Don't Care
-				MregWB<=0;	//Write back the value in mem_data
+				Mex1<=0;
+				Mex2<=0;
+				alu_ctrl<=0;
+				wMem<=1;
+				MmemR<=0;
+				MmemW<=0;
+				MmemData<=0;
+				MregWB<=0;	//Write_back the value in mem_data
 				if(IR[11:9]==3'b111) //If RA is R7
-					Mr7WB<=1;	// Write back mem_data to R7
+					Mr7WB<=1;	// Write_back mem_data to R7
 				else
-					Mr7WB<=5;	//PC Increment
+					Mr7WB<=5;	//Increment PC
 			end
 			
-			4'b0111:	//SM
+			4'b0111:	//SM Instruction
 			begin
+				/*** PRIORITY ENCODER ***/
 				modify_ir <= 1'b1;
-				rA1<= IR[11:9];	//RA
+				rA1<= IR[11:9]; //take RA
 				
 				if(LM_Imm[0]==1)
 				begin
@@ -235,64 +236,64 @@ module decode(MmemData, fromPipe1PC, IR, PC_Imm, rA1, rA2, wA, Sext_Imm6, Imm970
 					wA<=3'b000;
 					rA2 <=3'b000;
 				end 
-				Mex1<=0;	//Don't care
-				Mex2<=0;	//Don't Care
-				alu_ctrl<=0;	//Don't Care
-				wMem<=0;	//Write memory operation done
-				MmemR<=0;	//Don't Care
-				MmemW<=0;	//Write to memory. address in RA
-				MmemData<=1;	//Write to memory. data in Rfout2
-				MregWB<=0;	//Don't Care
-				Mr7WB<=5;	//PC Increment
+				Mex1<=0;
+				Mex2<=0;
+				alu_ctrl<=0;
+				wMem<=0;
+				MmemR<=0;
+				MmemW<=0;
+				MmemData<=1;
+				MregWB<=0;
+				Mr7WB<=5;
 			end
 			
-			4'b1100:	//BEQ
+			4'b1100:	//BEQ Instruction - Branching
 			begin
 				modify_ir <= 1'b0;
-				rA1<= IR[11:9];	//RA
-				rA2<= IR[8:6];	//RB
-				wA<= 3'b000;	//Don't Care
-				Mex1<=0;	//Don't care
-				Mex2<=0;	//Don't Care
-				alu_ctrl<=0;	//Don't Care
-				wMem<=1;	//No memory write
-				MmemR<=0;	//Don't Care
-				MmemW<=0;	//Don't Care
-				MmemData<=0;	//Don't Care
-				MregWB<=0;	//Don't Care
+				rA1<= IR[11:9];
+				rA2<= IR[8:6];	
+				wA<= 3'b000;
+				Mex1<=0;	
+				Mex2<=0;	
+				alu_ctrl<=0;
+				wMem<=1;	
+				MmemR<=0;	
+				MmemW<=0;	
+				MmemData<=0;
+				MregWB<=0;	
 				Mr7WB<=2;	//PC_Imm -> r7
 			end
 			
-			4'b1000:	//JAL
+			4'b1000:	//JAL Instruction
 			begin
 				modify_ir <= 1'b0;
-				rA1<= 3'b000;	//Don't Care
-				rA2<= 3'b000;	//Don't Care
-				wA<= IR[11:9];	//RA
-				Mex1<=0;	//Don't care
-				Mex2<=0;	//Don't Care
-				alu_ctrl<=0;	//Don't Care
-				wMem<=1;	//Don't disturb your memory
-				MmemR<=0;	//Don't Care
-				MmemW<=0;	//Don't Care
-				MmemData<=0;	//Don't Care
-				MregWB<=3;	//Write back PC+1
+				rA1<= 3'b000;
+				rA2<= 3'b000;
+				wA<= IR[11:9];
+				Mex1<=0;
+				Mex2<=0;
+				alu_ctrl<=0;
+				wMem<=1;
+				MmemR<=0;
+				MmemW<=0;
+				MmemData<=0;
+				MregWB<=3;	//Write_back PC+1
 				Mr7WB<=2;	//PC_Imm -> r7
 			end
 			
-			4'b1001:	//JLR
+			4'b1001:	//JLR Instruction
 			begin
 				modify_ir <= 1'b0;
-				rA1<= 3'b000;	//Don't Care
-				rA2<= IR[8:6];	//RB
-				wA<= IR[11:9];	//RA
-				Mex1<=0;	//Don't care
-				Mex2<=0;	//Don't Care
-				alu_ctrl<=0;	//Don't Care
-				wMem<=1;	//Don't disturb your memory
-				MmemR<=0;	//Don't Care
-				MmemW<=0;	//Don't Care
-				MmemData<=0;	//Don't Care
+				rA1<= 3'b000;
+				rA2<= IR[8:6];
+				wA<= IR[11:9];
+				Mex1<=0;
+				Mex2<=0;
+				alu_ctrl<=0;
+				wMem<=1;
+				MmemR<=0;
+				MmemW<=0;
+				MmemData<=0;
 				MregWB<=3;	//Write back PC+1
 				Mr7WB<=4;	//Write Rfout2 to R7
 			end
@@ -303,15 +304,15 @@ module decode(MmemData, fromPipe1PC, IR, PC_Imm, rA1, rA2, wA, Sext_Imm6, Imm970
 				rA1<=3'b000;	
 				rA2<=3'b000;	
 				wA<= 3'b000;
-				Mex1<=0;	//Don't care
-				Mex2<=0;	//Don't Care
-				alu_ctrl<=0;	//Don't Care
-				wMem<=1;	//Don't disturb your memory
-				MmemR<=0;	//Don't Care
-				MmemW<=0;	//Don't Care
-				MmemData<=0;	//Don't Care
+				Mex1<=0;
+				Mex2<=0;
+				alu_ctrl<=0;
+				wMem<=1;
+				MmemR<=0;
+				MmemW<=0;
+				MmemData<=0;
 				MregWB<=0;	
-				Mr7WB<=5;	//PC Increment
+				Mr7WB<=5;	//Increment PC
 			end
 		endcase
 	end

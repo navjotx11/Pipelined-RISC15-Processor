@@ -18,20 +18,20 @@ module forward_memory_stage(wb_pr_CCR_write,wb_pr_op,wb_pr_regC,mem_wb_op,mem_wb
 	parameter JLR = 4'b1001;
 
 	input [2:0] mem_wb_regA,mem_wb_regC,ex_mem_regA,wb_pr_regC;
-	input [5:0]mem_wb_op,ex_mem_op,wb_pr_op;
-	input mem_wb_CCR_write,ex_mem_CCR_write,wb_pr_CCR_write;
-	output reg [1:0]F3;
+	input [5:0]	mem_wb_op,ex_mem_op,wb_pr_op;
+	input 		mem_wb_CCR_write,ex_mem_CCR_write,wb_pr_CCR_write;
+	output reg [1:0]	F3;
 
 	always @(*)
 	begin
 		if(ex_mem_op[5:2]==SW||ex_mem_op[5:2]==SM)
 			begin
 				if((ex_mem_regA == mem_wb_regC)&&(mem_wb_op==ADD||mem_wb_op==NDU||mem_wb_op==ADC||mem_wb_op==ADZ||mem_wb_op==NDC||mem_wb_op==NDZ)&&(mem_wb_CCR_write==1'b0)) begin
-					F3 = 2'd1;//b				
+					F3 = 2'd1;				
 				end else if((ex_mem_regA == wb_pr_regC)&&(wb_pr_op==ADD||wb_pr_op==NDU||wb_pr_op==ADC||wb_pr_op==ADZ||wb_pr_op==NDC||wb_pr_op==NDZ)&&(wb_pr_CCR_write==1'b0)) begin
-					F3=2'd3;//z
+					F3=2'd3;
 				end else if((ex_mem_regA==mem_wb_regA)&&(mem_wb_op[5:2]==LW||mem_wb_op[5:2]==LM||mem_wb_op[5:2]==LHI)) begin
-					F3 = 2'd2;//c
+					F3 = 2'd2;
 				end else begin	
 					F3 = 2'b0;
 				end 

@@ -1,10 +1,10 @@
-module demux_8(selectInput, out);  // 8-output decoder
+module demux_8(sel, out);  // 8-output decoder
 
 	output reg [7:0] out;
-	input  [2:0] selectInput;
+	input  [2:0] sel;
 	
-	always@(selectInput) begin
-		case(selectInput)
+	always@(sel) begin
+		case(sel)
 			0: out = 8'b00000001;
 			1: out = 8'b00000010;
 			2: out = 8'b00000100;
