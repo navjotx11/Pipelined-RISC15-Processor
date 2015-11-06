@@ -17,8 +17,8 @@ module decode(MmemData, fromPipe1PC, IR, PC_Imm, rA1, rA2, wA, Sext_Imm6, Imm970
 	wire [15:0] offset;
 	wire [8:0] LM_Imm;	
 	assign LM_Imm = IR[8:0];
-	assign imm6 = {10'd0, IR[5:0]};
-	assign imm9 = {7'd0, IR[8:0]};
+	assign imm6 = {{10{IR[5]}}, IR[5:0]};
+	assign imm9 = {{7{IR[8]}}, IR[8:0]};
 	assign select = (IR[15:12]==4'b1000)?1'b0:1'b1;	
 	mux_16_2 __m1(.data0(imm9), .data1(imm6), .selectInput(select), .out(offset));
 	add_16 __add1(.in1(fromPipe1PC),.in2(offset),.out(PC_Imm),.clk(clk));
